@@ -4,8 +4,6 @@ import FormEdit from './components/FormEdit/FormEdit';
 import TablePost from './components/TablePosts/TablePosts';
 import * as postsAPI from './api';
 
-const BASE_URL = 'https://jsonplaceholder.typicode.com';
-
 export default function Home() {
   const [posts, setPosts] = useState(null);
 
