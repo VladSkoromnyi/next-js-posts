@@ -2,6 +2,7 @@ import Head from 'next/head';
 import { useEffect, useState } from 'react';
 import FormEdit from './components/FormEdit/FormEdit';
 import TablePost from './components/TablePosts/TablePosts';
+import * as postsAPI from './api';
 
 const BASE_URL = 'https://jsonplaceholder.typicode.com';
 
@@ -15,32 +16,13 @@ export default function Home() {
   const [changingId, setChangingId] = useState('')
   const [isShowEditor, setIsShowEditor] = useState(false)
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const response = await fetch(`${BASE_URL}/posts`);
-
-      switch (true) {
-        case response.status === 200:
-          const data = await response.json();
-          setPosts(data);
-          break;
-        case response.status === 400:
-        case response.status === 500:
-          alert('Error');
-          break;
-        default:
-          break;
-      }
-    }
-
-    fetchData();
+  useEffect(async () => {
+    setPosts(await postsAPI.getPosts());
   }, [])
 
   const deletePost = async (postId) => {
     if (window.confirm('Are you sure?')) {
-      const res = await fetch(`${BASE_URL}/posts/${postId}`, {
-        method: "DELETE"
-      });
+      const res = await postsAPI.deleteRequest(postId);
 
       switch (true) {
         case res.status === 200:
@@ -73,18 +55,12 @@ export default function Home() {
     event.preventDefault();
 
     if (window.confirm('Are you sure?')) {
-      const res = await fetch(`${BASE_URL}/posts/${changingId}`, {
-        method: "PUT",
-        body: JSON.stringify({
-          userId: oldUserId,
-          id: changingId,
-          title: oldTitle,
-          body: oldComment,
-        }),
-        headers: {
-          'Content-type': 'application/json; charset=UTF-8',
-        },
-      });
+      const res = await postsAPI.changeRequest(
+        changingId,
+        oldUserId,
+        oldTitle,
+        oldComment,
+      )
 
       switch (true) {
         case res.status === 200:
