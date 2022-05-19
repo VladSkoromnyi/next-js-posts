@@ -18,9 +18,19 @@ export default function Home() {
   useEffect(() => {
     const fetchData = async () => {
       const response = await fetch(`${BASE_URL}/posts`);
-      const data = await response.json();
 
-      setPosts(data);
+      switch (true) {
+        case response.status === 200:
+          const data = await response.json();
+          setPosts(data);
+          break;
+        case response.status >= 400:
+        case response.status <<= 500:
+          alert('Error');
+          break;
+        default:
+          break;
+      }
     }
 
     fetchData();
