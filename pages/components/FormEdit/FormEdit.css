@@ -28,5 +28,11 @@
 }
 
 .textarea {
+	font-family: "Roboto", sans-serif;
+	font-weight: 300;
 	height: 150px;
+}
+
+.cancel {
+	margin-left: 20px;
 }

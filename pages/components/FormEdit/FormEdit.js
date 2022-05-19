@@ -5,6 +5,7 @@ export default function FormEdit(props) {
 		setOldUserId,
 		setOldTitle,
 		setOldComment,
+		setIsShowEditor,
 
 		oldUserId,
 		oldTitle,
@@ -63,6 +64,15 @@ export default function FormEdit(props) {
 				className="button edit"
 			>
 				Save changes
+			</button>
+
+			<button
+				name="cancelButton" 
+				type="submit" 
+				className="button delete cancel"
+				onClick={() => setIsShowEditor(false)}
+			>
+				Cancel
 			</button>
 		</form>  		
 	);

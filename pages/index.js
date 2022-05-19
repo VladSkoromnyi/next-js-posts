@@ -2,7 +2,6 @@ import Head from 'next/head';
 import { useEffect, useState } from 'react';
 import FormEdit from './components/FormEdit/FormEdit';
 import TablePost from './components/TablePosts/TablePosts';
-import { dataFromServer } from './api';
 
 const BASE_URL = 'https://jsonplaceholder.typicode.com';
 
@@ -128,10 +127,11 @@ export default function Home() {
             setOldUserId={setOldUserId}
             setOldTitle={setOldTitle}
             setOldComment={setOldComment}
+            setIsShowEditor={setIsShowEditor}
 
             oldUserId={oldUserId}
             oldTitle={oldTitle}
-            oldComment={oldTitle}
+            oldComment={oldComment}
           />       
         )}
 

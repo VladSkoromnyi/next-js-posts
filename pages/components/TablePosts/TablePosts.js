@@ -29,24 +29,26 @@ export default function TablePost(props) {
 					</td>
 				</tr>
 			</thead>
-			{
-				posts && posts.map(({ 
-					userId,
-					id,
-					title,
-					body,
-				}) => (
-					<CellPost 
-						userId={userId}
-						id={id}
-						title={title}
-						body={body}
+			<tbody className="Posts__tbody">
+				{
+					posts && posts.map(({ 
+						userId,
+						id,
+						title,
+						body,
+					}) => (
+						<CellPost 
+							userId={userId}
+							id={id}
+							title={title}
+							body={body}
 
-						deletePost={deletePost}
-						handlerEdit={handlerEdit}
-					/>
-				))
-			}
+							deletePost={deletePost}
+							handlerEdit={handlerEdit}
+						/>
+					))
+				}				
+			</tbody>
 		</table>	
 		
 	);
