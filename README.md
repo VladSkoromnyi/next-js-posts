@@ -1,1 +1,6 @@
-This is a starter template for [Learn Next.js](https://nextjs.org/learn).
+## This is my first App on Next.js
+
+ - This App output data from API and render they to table.
+ - I implemented possibility delete and change posts in table
+
+[DEMO](`next-js-posts-red.vercel.app `)
