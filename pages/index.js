@@ -24,8 +24,8 @@ export default function Home() {
           const data = await response.json();
           setPosts(data);
           break;
-        case response.status >= 400:
-        case response.status <<= 500:
+        case response.status === 400:
+        case response.status === 500:
           alert('Error');
           break;
         default:
