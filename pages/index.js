@@ -1,209 +1,150 @@
-import Head from 'next/head'
+import Head from 'next/head';
+import { useEffect, useState } from 'react';
+import FormEdit from './components/FormEdit/FormEdit';
+import TablePost from './components/TablePosts/TablePosts';
+import { dataFromServer } from './api';
+
+const BASE_URL = 'https://jsonplaceholder.typicode.com';
 
 export default function Home() {
+  const [posts, setPosts] = useState(null);
+
+  const [oldTitle, setOldTitle] = useState('');
+  const [oldComment, setOldComment] = useState('');
+  const [oldUserId, setOldUserId] = useState('');
+
+  const [changingId, setChangingId] = useState('')
+  const [isShowEditor, setIsShowEditor] = useState(false)
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const response = await fetch(`${BASE_URL}/posts`);
+      const data = await response.json();
+
+      setPosts(data);
+    }
+
+    fetchData();
+  }, [])
+
+  const deletePost = async (postId) => {
+    if (window.confirm('Are you sure?')) {
+      const res = await fetch(`${BASE_URL}/posts/${postId}`, {
+        method: "DELETE"
+      });
+
+      switch (true) {
+        case res.status === 200:
+          setPosts((prevState) => prevState.filter(item => item.id !== postId));
+          break;
+        case res.status === 400:
+        case res.status === 500:
+          alert('Error');
+          break;
+        default:
+          break;
+      }
+    }
+  }
+
+  const handlerEdit = (
+    id,
+    userId,
+    title,
+    body,
+  ) => {
+    setOldTitle(title);
+    setOldComment(body);
+    setOldUserId(userId);
+    setChangingId(id);
+    setIsShowEditor(true);
+  }
+
+  const handlerSubmit = async (event) => {
+    event.preventDefault();
+
+    if (window.confirm('Are you sure?')) {
+      const res = await fetch(`${BASE_URL}/posts/${changingId}`, {
+        method: "PUT",
+        body: JSON.stringify({
+          userId: oldUserId,
+          id: changingId,
+          title: oldTitle,
+          body: oldComment,
+        }),
+        headers: {
+          'Content-type': 'application/json; charset=UTF-8',
+        },
+      });
+
+      switch (true) {
+        case res.status === 200:
+          setPosts((prevState) => {
+            return prevState.map(item => {
+              if (item.id === changingId) {
+                return {
+                  userId: oldUserId,
+                  id: item.id,
+                  title: oldTitle,
+                  body: oldComment,
+                };
+              }
+  
+              return item;
+              })}
+            )
+          break;
+        case res.status === 400:
+        case res.status === 500:
+          alert('Error');
+          break;
+        default:
+          break;
+      }
+    }
+
+    setOldTitle('');
+    setOldComment('');
+    setOldUserId('');
+    setChangingId('');
+    setIsShowEditor(false)
+  }
+
   return (
     <div className="container">
       <Head>
-        <title>Create Next App</title>
-        <link rel="icon" href="/favicon.ico" />
+        <title>Table of comments</title>
+        <link rel="icon" href="./favicon.ico" />
       </Head>
 
-      <main>
-        <h1 className="title">
-          Welcome to <a href="https://nextjs.org">Next.js!</a>
+      <main className="Main">
+        <h1 className="Main__title">
+          Posts from server:
         </h1>
 
-        <p className="description">
-          Get started by editing <code>pages/index.js</code>
-        </p>
+        {isShowEditor && (
+          <FormEdit 
+            handlerSubmit={(event) => handlerSubmit(event)}
+            setOldUserId={setOldUserId}
+            setOldTitle={setOldTitle}
+            setOldComment={setOldComment}
 
-        <div className="grid">
-          <a href="https://nextjs.org/docs" className="card">
-            <h3>Documentation &rarr;</h3>
-            <p>Find in-depth information about Next.js features and API.</p>
-          </a>
+            oldUserId={oldUserId}
+            oldTitle={oldTitle}
+            oldComment={oldTitle}
+          />       
+        )}
 
-          <a href="https://nextjs.org/learn" className="card">
-            <h3>Learn &rarr;</h3>
-            <p>Learn about Next.js in an interactive course with quizzes!</p>
-          </a>
-
-          <a
-            href="https://github.com/vercel/next.js/tree/master/examples"
-            className="card"
-          >
-            <h3>Examples &rarr;</h3>
-            <p>Discover and deploy boilerplate example Next.js projects.</p>
-          </a>
-
-          <a
-            href="https://vercel.com/import?filter=next.js&utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className="card"
-          >
-            <h3>Deploy &rarr;</h3>
-            <p>
-              Instantly deploy your Next.js site to a public URL with Vercel.
-            </p>
-          </a>
-        </div>
+        <TablePost 
+          posts={posts}
+          deletePost={deletePost}
+          handlerEdit={handlerEdit}
+        />
       </main>
 
-      <footer>
-        <a
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Powered by{' '}
-          <img src="/vercel.svg" alt="Vercel" className="logo" />
-        </a>
+      <footer className="Footer">
+
       </footer>
-
-      <style jsx>{`
-        .container {
-          min-height: 100vh;
-          padding: 0 0.5rem;
-          display: flex;
-          flex-direction: column;
-          justify-content: center;
-          align-items: center;
-        }
-
-        main {
-          padding: 5rem 0;
-          flex: 1;
-          display: flex;
-          flex-direction: column;
-          justify-content: center;
-          align-items: center;
-        }
-
-        footer {
-          width: 100%;
-          height: 100px;
-          border-top: 1px solid #eaeaea;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-        }
-
-        footer img {
-          margin-left: 0.5rem;
-        }
-
-        footer a {
-          display: flex;
-          justify-content: center;
-          align-items: center;
-        }
-
-        a {
-          color: inherit;
-          text-decoration: none;
-        }
-
-        .title a {
-          color: #0070f3;
-          text-decoration: none;
-        }
-
-        .title a:hover,
-        .title a:focus,
-        .title a:active {
-          text-decoration: underline;
-        }
-
-        .title {
-          margin: 0;
-          line-height: 1.15;
-          font-size: 4rem;
-        }
-
-        .title,
-        .description {
-          text-align: center;
-        }
-
-        .description {
-          line-height: 1.5;
-          font-size: 1.5rem;
-        }
-
-        code {
-          background: #fafafa;
-          border-radius: 5px;
-          padding: 0.75rem;
-          font-size: 1.1rem;
-          font-family: Menlo, Monaco, Lucida Console, Liberation Mono,
-            DejaVu Sans Mono, Bitstream Vera Sans Mono, Courier New, monospace;
-        }
-
-        .grid {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          flex-wrap: wrap;
-
-          max-width: 800px;
-          margin-top: 3rem;
-        }
-
-        .card {
-          margin: 1rem;
-          flex-basis: 45%;
-          padding: 1.5rem;
-          text-align: left;
-          color: inherit;
-          text-decoration: none;
-          border: 1px solid #eaeaea;
-          border-radius: 10px;
-          transition: color 0.15s ease, border-color 0.15s ease;
-        }
-
-        .card:hover,
-        .card:focus,
-        .card:active {
-          color: #0070f3;
-          border-color: #0070f3;
-        }
-
-        .card h3 {
-          margin: 0 0 1rem 0;
-          font-size: 1.5rem;
-        }
-
-        .card p {
-          margin: 0;
-          font-size: 1.25rem;
-          line-height: 1.5;
-        }
-
-        .logo {
-          height: 1em;
-        }
-
-        @media (max-width: 600px) {
-          .grid {
-            width: 100%;
-            flex-direction: column;
-          }
-        }
-      `}</style>
-
-      <style jsx global>{`
-        html,
-        body {
-          padding: 0;
-          margin: 0;
-          font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto,
-            Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue,
-            sans-serif;
-        }
-
-        * {
-          box-sizing: border-box;
-        }
-      `}</style>
     </div>
   )
 }

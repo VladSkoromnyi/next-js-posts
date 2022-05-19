@@ -1,0 +1,32 @@
+.Editor {
+	position: fixed;
+	left: 25%;
+	background-color: #fff;
+	width: 500px;
+	height: 500px;
+	padding: 50px;
+	border: 1px solid #dadada;
+	border-radius: 10px;
+	box-shadow: -4px 3px 22px 6px #e2e2e2;
+}
+
+.Editor__input {
+	display: block;
+	font-size: 17px;
+	width: 100%;
+	padding: 10px;
+	outline: none;
+	border: 1px solid #dadada;
+	border-radius: 5px;
+	margin: 5px 0 20px;
+
+	transition: box-shadow 300ms ease;
+}
+
+.Editor__input:focus {
+	box-shadow: -4px 3px 22px 6px #afcfff;
+}
+
+.textarea {
+	height: 150px;
+}
